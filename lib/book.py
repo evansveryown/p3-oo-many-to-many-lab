@@ -1,3 +1,5 @@
+# lib/book.py
+
 class Book:
     all = []
 
@@ -8,15 +10,15 @@ class Book:
         Book.all.append(self)
 
     def contracts(self):
-        # Return all contracts that have this book
-        return [contract for contract in Contract.all if contract.book == self]
+        from lib.book import Contract
+        return [c for c in Contract.all if c.book == self]
 
     def authors(self):
-        # Return unique authors from this book's contracts
+        from lib.book import Contract
         authors = []
-        for contract in self.contracts():
-            if contract.author not in authors:
-                authors.append(contract.author)
+        for c in self.contracts():
+            if c.author not in authors:
+                authors.append(c.author)
         return authors
 
 
@@ -30,25 +32,23 @@ class Author:
         Author.all.append(self)
 
     def contracts(self):
-        # Return all contracts for this author
-        return [contract for contract in Contract.all if contract.author == self]
+        from lib.book import Contract
+        return [c for c in Contract.all if c.author == self]
 
     def books(self):
-        # Return all books related to this author via contracts
         return [contract.book for contract in self.contracts()]
 
     def sign_contract(self, book, date, royalties):
+        from lib.book import Contract
         if not isinstance(book, Book):
             raise Exception("book must be a Book instance")
         if not isinstance(date, str):
             raise Exception("date must be a string")
         if not isinstance(royalties, int):
             raise Exception("royalties must be an integer")
-        # Create a new Contract and return it
         return Contract(self, book, date, royalties)
 
     def total_royalties(self):
-        # Sum royalties of all contracts of this author
         return sum(contract.royalties for contract in self.contracts())
 
 
